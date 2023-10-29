@@ -34,7 +34,9 @@
     
     <button onclick="calcularCostoViaje()">Calcular Costo</button>
     </div>
-    <div id="resultado"></div>
+    <div id="resultado">
+        <h2 id="total">Resultados</h2>
+    </div>
 
     <script>
         let autocomplit;
@@ -145,7 +147,7 @@
 let  km = service.getDistanceMatrix(request).then((response) => {
     // put response
     //console.log(response.rows[0].elements[0].duration.value);
-    let minutos =Math.round((response.rows[0].elements[0].duration.value/60)); 
+    let minutos = Math.round((response.rows[0].elements[0].duration.value/60)); 
     console.log(minutos);
     return {"km":Math.round(response.rows[0].elements[0].distance.value/1000) , minutos,horas:response.rows[0].elements[0].duration.text };
       
@@ -174,6 +176,9 @@ return km;
             const key = coches.value;
             const total = Base[key].base + (km * Base[key].mkm) + ((km * 2) / Base[key].rkm )* 23 +(minutos *2);
 console.log(total.toFixed(2));
+            const totale = document.getElementById('total');
+            totale.innerHTML= ` <h3>Total:</h3>$ ${total.toFixed(2)}<p>Tiempo: ${horas}</p>`;
+            
         }
 //Cargar opciones
 
