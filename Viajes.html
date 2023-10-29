@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Seleccionar punto de salida y llegada</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+</head>
+<body>
+    <h1>Seleccionar punto de salida y llegada</h1>
+
+    <div id="map"></div>
+
+    <script>
+        document.addEventListener('load',()=> {
+            // Crea el mapa
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 20.123456,
+                    lng: -100.123456
+                },
+                zoom: 14
+            });
+
+            // Añade un evento click al mapa
+            google.maps.event.addListener(map, 'click', function(event) {
+                // Obtiene las coordenadas del punto donde se hizo clic
+                var latitud = event.latLng.lat();
+                var longitud = event.latLng.lng();
+
+                // Obtiene la distancia entre los dos puntos
+                var request = {
+                    origins: [
+                        {
+                            lat: latitud,
+                            lng: longitud
+                        }
+                    ],
+                    destinations: [
+                        {
+                            lat: 21.123456,
+                            lng: -99.123456
+                        }
+                    ],
+                    mode: 'driving'
+                };
+
+                var service = new google.maps.DistanceMatrixService();
+                service.getDistanceMatrix(request, function(response, status) {
+                    if (status === google.maps.DistanceMatrixStatus.OK) {
+                        // Obtiene la distancia
+                        var distance = response.rows[0].elements[0].distance.value;
+
+                        // Imprime la distancia
+                        alert('La distancia entre los dos puntos es de ' + distance + ' kilómetros');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
