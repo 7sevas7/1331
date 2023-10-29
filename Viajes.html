@@ -1,45 +1,225 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Calculadora de Costo de Viaje</title>
     <script>
-      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-        key: "AIzaSyDaczoOoK2Toapifn0N32S4R_Xw9SAfs-0",
-        // Add other bootstrap parameters as needed, using camel case.
-        // Use the 'v' parameter to indicate the version to load (alpha, beta, weekly, etc.)
-      });
-      
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+            key: "AIzaSyDaczoOoK2Toapifn0N32S4R_Xw9SAfs-0",
+            // Add other bootstrap parameters as needed, using camel case.
+            // Use the 'v' parameter to indicate the version to load (alpha, beta, weekly, etc.)
+        });
+
     </script>
-   <script async
-   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaczoOoK2Toapifn0N32S4R_Xw9SAfs-0&libraries=places&callback=autoComplete">
-</script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaczoOoK2Toapifn0N32S4R_Xw9SAfs-0&libraries=places&callback=autoComplete">
+        </script>
+        <link rel="stylesheet" href="viajes.css">
 </head>
+
 <body>
+    <div class="content">
     <h1>Calculadora de Costo de Viaje</h1>
-    
+
+    <label for="coches">Auto</label>
+    <select name="" id="coches">
+      <option value="">Selecciona</option>
+    </select>
+
     <label for="origen">Origen:</label>
-    <input type="text" id="origen" autocomplete="" placeholder="Ingrese el origen">
-    
+    <input type="text" id="origen"autocomplete="" placeholder="Ingrese el origen">
+
     <label for="destino">Destino:</label>
     <input type="text" id="destino" placeholder="Ingrese el destino">
     
     <button onclick="calcularCostoViaje()">Calcular Costo</button>
-    
+    </div>
     <div id="resultado"></div>
-    
+
     <script>
         let autocomplit;
-       function autoComplete(params) {
         const origen = document.getElementById('origen');
-            autocomplit = new google.maps.places.Autocomplete(
-               origen,{
-                types:['establishment'],
-                componentRestrictions:{'country':['UV']},
-                fields:['place_id','geometry','name']
-               } 
-            );
+        const destino = document.getElementById('destino');
+        const coordenadas = [];
+        function configGoogle(place) {
+
+            try {
+
+                autocomplit = new google.maps.places.Autocomplete(
+                    place, {
+                    types: ['establishment'],
+                    componentRestrictions: { 'country': ['MX'] },
+                    fields: ['place_id', 'geometry', 'name']
+                }
+                );
+
+            } catch (error) {
+                console.log(error);
+
+            }
+            autocomplit.addListener('place_changed', onPlace);
+
+
+        }
+
+        function autoComplete() {
+            console.log("Ejecuta")
+
+
+            try {
+
+                autocomplit = new google.maps.places.Autocomplete(
+                    origen, {
+                    types: ['establishment'],
+                    componentRestrictions: { 'country': ['MX'] },
+                    fields: ['place_id', 'geometry', 'name']
+                }
+                );
+
+            } catch (error) {
+                console.log(error);
+
+            }
+            const searchBoxs = new google.maps.places.SearchBox(origen);
+
+            searchBoxs.addListener('places_changed', () => {
+                console.log("Hokaorigen");
+                const geo = searchBoxs.getPlaces();
+                const lat = geo[0].geometry.location.lat();
+                const lng = geo[0].geometry.location.lng();
+                coordenadas[0] = { lat, lng }
+
+            });
+
+            try {
+                console.log("Destino");
+                autocomplit = new google.maps.places.Autocomplete(
+                    destino, {
+                    types: ['establishment'],
+                    componentRestrictions: { 'country': ['MX'] },
+                    fields: ['place_id', 'geometry', 'name']
+                }
+                );
+
+            } catch (error) {
+                console.log(error);
+
+            }
+
+            //autocomplit.addListener('places_changed',onPlace);
+            const searchBox = new google.maps.places.SearchBox(destino);
+
+            searchBox.addListener('places_changed', () => {
+                console.log("Hoka");
+                const geo = searchBox.getPlaces();
+                const lat = geo[0].geometry.location.lat();
+                const lng = geo[0].geometry.location.lng();
+                coordenadas[1] = { lat, lng }
+
+
+
+            });
         
-       }
+       
+        
+        }
+
+        function initMap(coordenadas) {
+          // initialize services
+          console.log(coordenadas);
+         
+  const geocoder = new google.maps.Geocoder();
+  const service = new google.maps.DistanceMatrixService();
+  // build request
+  const origin1 = coordenadas[0];
+  const destination1 = coordenadas[1];
+  const request = {
+    origins: [ origin1],
+    destinations: [ destination1],
+    travelMode: google.maps.TravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.METRIC,
+    avoidHighways: false,
+    avoidTolls: false,
+  };
+
+let  km = service.getDistanceMatrix(request).then((response) => {
+    // put response
+    //console.log(response.rows[0].elements[0].duration.value);
+    let minutos =Math.round((response.rows[0].elements[0].duration.value/60)); 
+    console.log(minutos);
+    return {"km":Math.round(response.rows[0].elements[0].distance.value/1000) , minutos,horas:response.rows[0].elements[0].duration.text };
+      
+    }).then(res => res);
+return km;
+
+
+}
+//Para las coordenadas
+        function onPlace() {
+            //var place = autocomplit.getPlace();
+            console.log(autocomplit);
+            // if(!place.geometry){
+            //     origen.placeholder = 'Enter a place';
+            // }else{
+            //     console.log(place.name);
+            // }
+        }
+        
+        async function calcularCostoViaje() {
+            
+          
+            const datos = await initMap(coordenadas);
+            const {km,minutos,horas} = datos;   
+            console.log(horas);
+            const key = coches.value;
+            const total = Base[key].base + (km * Base[key].mkm) + ((km * 2) / Base[key].rkm )* 23 +(minutos *2);
+console.log(total.toFixed(2));
+        }
+//Cargar opciones
+
+const Base ={
+    "Coche":{
+        "base":500,
+        "mkm":0.5,
+        "rkm":14
+    },
+    "SUV":{
+        "base":700,
+        "mkm":0.8,
+        "rkm":9
+    },
+    "VAN14":{
+        "base":1000,
+        "mkm":1,
+        "rkm":8
+    },
+    "VAN20":{
+        "base":1500,
+        "mkm":1.5,
+        "rkm":5
+    }
+}
+
+const coches = document.getElementById("coches");
+
+function opciones() {
+    
+    Object.entries(Base).forEach(([key, value]) => {
+  coches.innerHTML += `<option value="${key}">${key}</option>`;
+});
+
+
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ origen.value = "";
+ destino.value ="";
+    opciones();
+});
+
+
+       
+        
     </script>
 </body>
+
 </html>
